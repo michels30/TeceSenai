@@ -1,1 +1,162 @@
+import mysql.connector
 
+def conectar():
+    return mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="root",
+        database="gaguca"
+    )
+
+# Cadastrar usuário
+def cadastrar_usuario(nome_completo, cpf, usuario, senha, telefone):
+    conn = conectar()
+    cursor = conn.cursor()
+    query = """
+        INSERT INTO usuarios (nome_completo, cpf, usuario, senha, telefone)
+        VALUES (%s, %s, %s, %s, %s)
+    """
+    cursor.execute(query, (nome_completo, cpf, usuario, senha, telefone))
+    conn.commit()
+    conn.close()
+
+# Verificar login
+def verificar_login(usuario, senha):
+    conn = conectar()
+    cursor = conn.cursor()
+    query = "SELECT * FROM usuarios WHERE usuario = %s AND senha = %s"
+    cursor.execute(query, (usuario, senha))
+    resultado = cursor.fetchone()
+    conn.close()
+    return resultado
+
+# Cadastrar produto
+def cadastrar_produto(produto, cores, quantidade, preco_por_metro):
+    conn = conectar()
+    cursor = conn.cursor()
+    query = """
+        INSERT INTO produtos (produto, cores, quantidade, preco_por_metro)
+        VALUES (%s, %s, %s, %s)
+    """
+    cursor.execute(query, (produto, cores, quantidade, preco_por_metro))
+    conn.commit()
+    conn.close()
+
+# Listar produtos
+def listar_produtos():
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM produtos")
+    produtos = cursor.fetchall()
+    conn.close()
+    return produtos
+
+# Atualizar produto (agora com a funcionalidade de atualização da quantidade)
+def atualizar_produto(produto_id, produto=None, cores=None, quantidade=None, preco_por_metro=None):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    # Cria uma lista de SETs que devem ser atualizados
+    campos = []
+    valores = []
+    
+    if produto:
+        campos.append("produto = %s")
+        valores.append(produto)
+    if cores:
+        campos.append("cores = %s")
+        valores.append(cores)
+    if quantidade is not None:  # Verifica se quantidade foi fornecida para atualização
+        campos.append("quantidade = %s")
+        valores.append(quantidade)
+    if preco_por_metro is not None:
+        campos.append("preco_por_metro = %s")
+        valores.append(preco_por_metro)
+
+    valores.append(produto_id)
+
+    query = f"""
+        UPDATE produtos
+        SET {', '.join(campos)}
+        WHERE id = %s
+    """
+    
+    cursor.execute(query, tuple(valores))
+    conn.commit()
+    conn.close()
+
+# Função para buscar um produto pelo ID
+
+
+
+
+# Função para alterar as informações de um produto
+def alterar_produto(produto_id, nome, cores, quantidade, preco_por_metro):
+    # Aqui você deve alterar o produto no banco de dados ou estrutura de dados
+    # Exemplo de como seria a alteração de um produto
+    produto = db.buscar_produto_por_id(produto_id)  # Busca o produto pelo ID
+
+    if produto:
+        produto.nome = nome
+        produto.cores = cores
+        produto.quantidade = quantidade
+        produto.preco_por_metro = preco_por_metro
+
+        return True
+    return False  # Se o produto não for encontrado, retorna False
+
+# Deletar produto
+def deletar_produto(produto_id):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM produtos WHERE id = %s", (produto_id,))
+    conn.commit()
+    conn.close()
+
+def tela_excluir(produto):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM produtos WHERE id = %s", (produto,))
+    conn.commit()
+    conn.close()
+
+
+# Comprar produto (adicionar quantidade ao estoque)
+def comprar_produto(produto_id, quantidade):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    # Primeiro, verificamos o produto e sua quantidade atual
+    cursor.execute("SELECT quantidade FROM produtos WHERE id = %s", (produto_id,))
+    produto = cursor.fetchone()
+
+    if produto:
+        nova_quantidade = produto[0] + quantidade  # Aumenta a quantidade no estoque
+        # Atualiza o estoque no banco de dados
+        atualizar_produto(produto_id, quantidade=nova_quantidade)
+        conn.commit()
+        conn.close()
+        return True
+    else:
+        conn.close()
+        return False
+
+# Vender produto (reduzir quantidade no estoque)
+def vender_produto(produto_id, quantidade):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    # Primeiro, verificamos o produto e sua quantidade atual
+    cursor.execute("SELECT quantidade FROM produtos WHERE id = %s", (produto_id,))
+    produto = cursor.fetchone()
+
+    if produto and produto[0] >= quantidade:  # Se houver estoque suficiente
+        nova_quantidade = produto[0] - quantidade  # Diminui a quantidade no estoque
+        # Atualiza o estoque no banco de dados
+        atualizar_produto(produto_id, quantidade=nova_quantidade)
+        conn.commit()
+        conn.close()
+        return True
+    else:
+        conn.close()
+        return False
