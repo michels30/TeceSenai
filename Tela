@@ -243,21 +243,48 @@ class App:
         confirmar_senha = self.confirmar_senha_entry.get()
         telefone = self.telefone_entry.get()
 
+        # Verifica se todos os campos foram preenchidos
+        if not nome or not cpf or not usuario or not senha or not confirmar_senha or not telefone:
+            messagebox.showerror("Erro", "Todos os campos são obrigatórios para o cadastro.")
+            return
+
+        # Verifica se o CPF e telefone são numéricos
+        if not cpf.isdigit() or not telefone.isdigit():
+            messagebox.showerror("Erro", "CPF e Telefone devem conter apenas números.")
+            return
+
+        # Verifica se a senha é numérica
+        if not senha.isdigit():
+            messagebox.showerror("Erro", "A senha deve conter apenas números.")
+            return
+
+        # Verifica se as senhas coincidem
         if senha != confirmar_senha:
             messagebox.showerror("Erro", "As senhas não coincidem.")
-        else:
-            cadastrar_usuario(nome, cpf, usuario, senha, telefone)
-            messagebox.showinfo("Sucesso", "Usuário cadastrado com sucesso!")
-            self.tela_login()
+            return
 
-
+        # Cadastra o usuário caso todas as validações sejam atendidas
+        cadastrar_usuario(nome, cpf, usuario, senha, telefone)
+        messagebox.showinfo("Sucesso", "Usuário cadastrado com sucesso!")
+        self.tela_login()
+        
     def fazer_login(self):
         usuario = self.usuario_entry.get()
         senha = self.senha_entry.get()
 
+        # Verifica se os campos estão preenchidos
+        if not usuario or not senha:
+            # Exibe uma mensagem de erro
+            from tkinter import messagebox
+            messagebox.showerror("Erro de Login", "Por favor, preencha todos os campos!")
+            return
+
         if verificar_login(usuario, senha):
             self.tela_estoque()
         else:
+        # Exibe uma mensagem de erro para credenciais inválidas
+            from tkinter import messagebox
+            messagebox.showerror("Erro de Login", "Usuário ou senha incorretos!")
             messagebox.showerror("Erro", "Usuário ou senha inválidos.")
 # Criando a aplicação
 root = tk.Tk()
