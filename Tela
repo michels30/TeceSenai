@@ -60,3 +60,205 @@ class App:
 
         tk.Button(self.root, text="Cadastrar", command=self.cadastrar_usuario, bg="midnightblue", fg="white").grid(row=6, column=0, columnspan=2, pady=5)
         tk.Button(self.root, text="Voltar", command=self.tela_login, bg="midnightblue", fg="white").grid(row=7, column=0, columnspan=2, pady=5)
+
+    def tela_estoque(self):
+            self.limpar_tela()
+    
+            self.root.grid_columnconfigure(0, weight=1)
+            self.root.grid_columnconfigure(1, weight=1)
+    
+            tk.Label(self.root, text="Produto:", bg="midnightblue", fg="white").grid(row=0, column=0, sticky="e", padx=5, pady=5)
+            tk.Label(self.root, text="Cores:", bg="midnightblue", fg="white").grid(row=1, column=0, sticky="e", padx=5, pady=5)
+            tk.Label(self.root, text="Quantidade:", bg="midnightblue", fg="white").grid(row=2, column=0, sticky="e", padx=5, pady=5)
+            tk.Label(self.root, text="Preço/Metro:", bg="midnightblue", fg="white").grid(row=3, column=0, sticky="e", padx=5, pady=5)
+    
+            self.produto_entry = tk.Entry(self.root)
+            self.cores_entry = tk.Entry(self.root)
+            self.quantidade_entry = tk.Entry(self.root)
+            self.preco_por_metro_entry = tk.Entry(self.root)
+    
+            self.produto_entry.grid(row=0, column=1, padx=5, pady=5)
+            self.cores_entry.grid(row=1, column=1, padx=5, pady=5)
+            self.quantidade_entry.grid(row=2, column=1, padx=5, pady=5)
+            self.preco_por_metro_entry.grid(row=3, column=1, padx=5, pady=5)
+    
+            tk.Button(self.root, text="Cadastrar Produto", command=self.cadastrar_produto, bg="midnightblue", fg="white").grid(row=4, column=0, columnspan=2, pady=5)
+            tk.Button(self.root, text="Comprar Produto", command=self.tela_comprar, bg="midnightblue", fg="white").grid(row=5, column=0, columnspan=2, pady=5)
+            tk.Button(self.root, text="Vender Produto", command=self.tela_vender, bg="midnightblue", fg="white").grid(row=6, column=0, columnspan=2, pady=5)
+            tk.Button(self.root, text="Alterar Produto", command=self.tela_alterar_produto, bg="midnightblue", fg="white").grid(row=7, column=0, columnspan=2, pady=5)
+            tk.Button(self.root, text="Listar Produtos", command=self.listar_produtos, bg="midnightblue", fg="white").grid(row=8, column=0, columnspan=2, pady=5)
+            tk.Button(self.root, text="Deletar Produto", command=self.tela_excluir, bg="midnightblue", fg="white").grid(row=9, column=0, columnspan=2, pady=5)
+    
+            self.text_area = tk.Text(self.root, height=10, width=80)
+            self.text_area.grid(row=10, column=0, columnspan=2, padx=5, pady=5)
+    
+            tk.Button(self.root, text="Sair", command=self.tela_login, bg="midnightblue", fg="white").grid(row=11, column=0, columnspan=2, pady=5)
+        def cadastrar_produto(self):
+            produto = self.produto_entry.get()
+            cores = self.cores_entry.get()
+            quantidade = self.quantidade_entry.get()
+            preco_por_metro = self.preco_por_metro_entry.get()
+    
+            if produto and cores and quantidade and preco_por_metro:
+                cadastrar_produto(str(produto), str(cores), int(quantidade), float(preco_por_metro))
+                messagebox.showinfo("Sucesso", "Produto cadastrado com sucesso!")
+                self.produto_entry.delete(0, tk.END)
+                self.cores_entry.delete(0, tk.END)
+                self.quantidade_entry.delete(0, tk.END)
+                self.preco_por_metro_entry.delete(0, tk.END)
+            else:
+                messagebox.showerror("Erro", "Todos os campos são obrigatórios.")
+    
+        def listar_produtos(self):
+            produtos = listar_produtos()
+            self.text_area.delete(1.0, tk.END)
+    
+            for produto in produtos:
+                self.text_area.insert(
+                    tk.END, 
+                    f"ID: {produto[0]}, Produto: {produto[1]}, Cores: {produto[2]}, Quantidade: {produto[3]}, Preço/Metro: {produto[4]}\n"
+                )
+
+      def tela_comprar(self):
+        self.limpar_tela()
+
+        tk.Label(self.root, text="ID Produto:", bg="midnightblue", fg="white").grid(row=0, column=0)
+        tk.Label(self.root, text="Quantidade:", bg="midnightblue", fg="white").grid(row=1, column=0)
+
+        self.id_produto_entry = tk.Entry(self.root)
+        self.quantidade_compra_entry = tk.Entry(self.root)
+
+        self.id_produto_entry.grid(row=0, column=1)
+        self.quantidade_compra_entry.grid(row=1, column=1)
+
+        tk.Button(self.root, text="Comprar", command=self.comprar_produto, bg="midnightblue", fg="white").grid(row=2, column=0, columnspan=2)
+        tk.Button(self.root, text="Voltar", command=self.tela_estoque, bg="midnightblue", fg="white").grid(row=3, column=0, columnspan=2)
+
+    def comprar_produto(self):
+        id_produto = self.id_produto_entry.get()
+        quantidade = self.quantidade_compra_entry.get()
+
+        if id_produto and quantidade:
+            if comprar_produto(int(id_produto), int(quantidade)):
+                messagebox.showinfo("Sucesso", f"Compra de {quantidade} unidades realizada com sucesso!")
+            else:
+                messagebox.showerror("Erro", "Produto não encontrado ou erro na compra.")
+        else:
+            messagebox.showerror("Erro", "Todos os campos são obrigatórios.")
+
+    def tela_vender(self):
+        self.limpar_tela()
+
+        tk.Label(self.root, text="ID Produto:", bg="midnightblue", fg="white").grid(row=0, column=0)
+        tk.Label(self.root, text="Quantidade:", bg="midnightblue", fg="white").grid(row=1, column=0)
+
+        self.id_produto_venda_entry = tk.Entry(self.root)
+        self.quantidade_venda_entry = tk.Entry(self.root)
+
+        self.id_produto_venda_entry.grid(row=0, column=1)
+        self.quantidade_venda_entry.grid(row=1, column=1)
+
+        tk.Button(self.root, text="Vender", command=self.vender_produto, bg="midnightblue", fg="white").grid(row=2, column=0, columnspan=2)
+        tk.Button(self.root, text="Voltar", command=self.tela_estoque, bg="midnightblue", fg="white").grid(row=3, column=0, columnspan=2)
+
+    def vender_produto(self):
+        id_produto = self.id_produto_venda_entry.get()
+        quantidade = self.quantidade_venda_entry.get()
+
+        if id_produto and quantidade:
+            if vender_produto(int(id_produto), int(quantidade)):
+                messagebox.showinfo("Sucesso", f"Venda de {quantidade} unidades realizada com sucesso!")
+            else:
+                messagebox.showerror("Erro", "Produto não encontrado ou erro na venda.")
+        else:
+            messagebox.showerror("Erro", "Todos os campos são obrigatórios.")
+
+    def tela_alterar_produto(self):
+        self.limpar_tela()
+
+        tk.Label(self.root, text="ID Produto:", bg="midnightblue", fg="white").grid(row=0, column=0)
+        tk.Label(self.root, text="Produto:", bg="midnightblue", fg="white").grid(row=1, column=0)
+        tk.Label(self.root, text="Cores:", bg="midnightblue", fg="white").grid(row=2, column=0)
+        tk.Label(self.root, text="Quantidade:", bg="midnightblue", fg="white").grid(row=3, column=0)
+        tk.Label(self.root, text="Preço/Metro:", bg="midnightblue", fg="white").grid(row=4, column=0)
+
+        self.id_produto_alterar_entry = tk.Entry(self.root)
+        self.produto_alterar_entry = tk.Entry(self.root)
+        self.cores_alterar_entry = tk.Entry(self.root)
+        self.quantidade_alterar_entry = tk.Entry(self.root)
+        self.preco_por_metro_alterar_entry = tk.Entry(self.root)
+
+        self.id_produto_alterar_entry.grid(row=0, column=1)
+        self.produto_alterar_entry.grid(row=1, column=1)
+        self.cores_alterar_entry.grid(row=2, column=1)
+        self.quantidade_alterar_entry.grid(row=3, column=1)
+        self.preco_por_metro_alterar_entry.grid(row=4, column=1)
+
+        tk.Button(self.root, text="Alterar Produto", command=self.salvar_alteracao, bg="midnightblue", fg="white").grid(row=5, column=0, columnspan=2)
+        tk.Button(self.root, text="Voltar", command=self.tela_estoque, bg="midnightblue", fg="white").grid(row=6, column=0, columnspan=2)
+
+    def salvar_alteracao(self):
+        id_produto = self.id_produto_alterar_entry.get()
+        produto = self.produto_alterar_entry.get()
+        cores = self.cores_alterar_entry.get()
+        quantidade = self.quantidade_alterar_entry.get()
+        preco_por_metro = self.preco_por_metro_alterar_entry.get()
+
+        if id_produto and produto and cores and quantidade and preco_por_metro:
+            atualizar_produto(int(id_produto), str(produto), str(cores), int(quantidade), float(preco_por_metro))
+            messagebox.showinfo("Sucesso", "Produto alterado com sucesso!")
+        else:
+            messagebox.showerror("Erro", "Todos os campos são obrigatórios.")
+
+    def deletar_produto(self):
+        id_produto = self.id_produto_entry.get()
+
+        if id_produto:
+            deletar_produto(int(id_produto))
+            messagebox.showinfo("Sucesso", "Produto excluído com sucesso!")
+            self.id_produto_entry.delete(0, tk.END)
+        else:
+            messagebox.showerror("Erro", "Informe o ID do produto para excluir.")
+
+    def tela_excluir(self):
+        self.limpar_tela()
+
+        tk.Label(self.root, text="ID Produto:", bg="midnightblue", fg="white").grid(row=0, column=0)
+
+        self.id_produto_entry = tk.Entry(self.root)  # Corrigido o nome da variável
+        self.id_produto_entry.grid(row=0, column=1)
+
+        tk.Button(self.root, text="Deletar", command=self.deletar_produto, bg="midnightblue", fg="white").grid(row=2, column=0, columnspan=2)
+        tk.Button(self.root, text="Voltar", command=self.tela_estoque, bg="midnightblue", fg="white").grid(row=3, column=0, columnspan=2)
+    def limpar_tela(self):
+        for widget in self.root.winfo_children():
+            widget.grid_forget()
+
+    def cadastrar_usuario(self):
+        nome = self.nome_entry.get()
+        cpf = self.cpf_entry.get()
+        usuario = self.usuario_cadastro_entry.get()
+        senha = self.senha_cadastro_entry.get()
+        confirmar_senha = self.confirmar_senha_entry.get()
+        telefone = self.telefone_entry.get()
+
+        if senha != confirmar_senha:
+            messagebox.showerror("Erro", "As senhas não coincidem.")
+        else:
+            cadastrar_usuario(nome, cpf, usuario, senha, telefone)
+            messagebox.showinfo("Sucesso", "Usuário cadastrado com sucesso!")
+            self.tela_login()
+
+
+    def fazer_login(self):
+        usuario = self.usuario_entry.get()
+        senha = self.senha_entry.get()
+
+        if verificar_login(usuario, senha):
+            self.tela_estoque()
+        else:
+            messagebox.showerror("Erro", "Usuário ou senha inválidos.")
+# Criando a aplicação
+root = tk.Tk()
+app = App(root)
+root.mainloop()
